@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>For Kesayangan Camel</title>
+
+<style>
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+text-align:center;
+color:white;
+overflow:hidden;
+background:linear-gradient(-45deg,#ff9a9e,#fad0c4,#fbc2eb,#a6c1ee);
+background-size:400% 400%;
+animation:gradient 12s ease infinite;
+}
+
+@keyframes gradient{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.page{display:none;padding:50px;}
+.active{display:block;}
+
+button{
+padding:12px 25px;
+font-size:16px;
+border:none;
+border-radius:30px;
+margin:10px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{transform:scale(1.1);}
+
+.yes{background:white;color:#ff4e8a;}
+.no{background:#ff4e8a;color:white;}
+
+img{
+width:250px;
+border-radius:20px;
+margin-top:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.gameHeart{
+position:fixed;
+font-size:40px;
+cursor:pointer;
+}
+
+.longtext{
+max-width:750px;
+margin:auto;
+font-size:15px;
+line-height:1.5;
+opacity:0;
+transition:opacity 2s;
+text-align:left;
+max-height:80vh;
+overflow:auto;
+}
+
+/* Confetti */
+@keyframes fall{
+to{transform:translateY(110vh);}
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bgm" loop>
+<source src="lagu.mp3" type="audio/mpeg">
+</audio>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+<h1>Happy Birthday Feby Rachma ❤️</h1>
+<p id="countdown"></p>
+<button class="yes" onclick="nextPage(2)">Mulai 🎉</button>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+<h2>Make a wish dulu dong boss</h2>
+<p>Udah siap lanjut?</p>
+<button class="yes" onclick="nextPage(3)">Gas</button>
+</div>
+
+<!-- PAGE 3 MINI GAME -->
+<div class="page" id="page3">
+<h2>Tangkap Hatinya Dulu DoNG Bos</h2>
+<p>Klik 5 hati buat lanjut</p>
+<p id="score">0 / 5</p>
+</div>
+
+<!-- PAGE 4 PILIHAN -->
+<div class="page" id="page4">
+<h2>Which One, Yang Paling Kamu Suka</h2>
+<button class="yes" onclick="nextPage(5)">Pertama Kali Kamu Notice Aku</button>
+<button class="yes" onclick="nextPage(5)">Pertama Kali Keluar Sama Aku</button>
+<button class="yes" onclick="nextPage(5)">Semua Moment Sama Aku</button>
+</div>
+
+<!-- PAGE 5 PUJIAN RANDOM -->
+<div class="page" id="page5">
+<h2>Kamu tau ga?</h2>
+<p id="compliment"></p>
+<button class="yes" onclick="randomCompliment()">Klik lagi </button>
+<br><br>
+<button class="yes" onclick="nextPage(6)">Lanjut</button>
+</div>
+
+<!-- PAGE 6 FOTO -->
+<div class="page" id="page6">
+<h2>Kamu itu spesial bangEeeeEet BUAT AKUUU</h2>
+<img src="foto.png">
+<br>
+<button class="yes" onclick="nextPage(7)">Lanjut</button>
+</div>
+
+<!-- PAGE 7 PERTANYAAN -->
+<div class="page" id="page7">
+<h2>Kamu sayang sama aku ga boz?</h2>
+<button class="yes" onclick="nextPage(8)">Sayang bangettt</button>
+</div>
+
+<!-- PAGE 8 LONG TEXT -->
+<div class="page" id="page8">
+<h2>For U Cintaa ❤️</h2>
+<div class="longtext">
+<p id="typing"></p>
+</div>
+</div>
+
+<script>
+
+/* PAGE SWITCH */
+function nextPage(num){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById("page"+num).classList.add("active");
+
+if(num==2){
+document.getElementById("bgm").play();
+}
+
+if(num==3){
+startGame();
+}
+
+if(num==8){
+document.querySelector(".longtext").style.opacity="1";
+typeWriter();
+}
+}
+
+/* COUNTDOWN */
+setInterval(function(){
+var target=new Date("2026-02-13T00:00:00+07:00").getTime();
+var now=new Date().getTime();
+var distance=target-now;
+
+var days=Math.floor(distance/(1000*60*60*24));
+var hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+var minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+var seconds=Math.floor((distance%(1000*60))/1000);
+
+document.getElementById("countdown").innerHTML=
+days+" Hari "+hours+" Jam "+minutes+" Menit "+seconds+" Detik ❤️";
+},1000);
+
+/* MINI GAME */
+var score=0;
+function startGame(){
+score=0;
+document.getElementById("score").innerHTML="0 / 5";
+
+var interval=setInterval(function(){
+var heart=document.createElement("div");
+heart.className="gameHeart";
+heart.innerHTML="❤️";
+heart.style.left=Math.random()*90+"vw";
+heart.style.top=Math.random()*80+"vh";
+document.body.appendChild(heart);
+
+heart.onclick=function(){
+heart.remove();
+score++;
+document.getElementById("score").innerHTML=score+" / 5";
+if(score>=5){
+clearInterval(interval);
+nextPage(4);
+}
+};
+
+setTimeout(()=>heart.remove(),2000);
+
+},800);
+}
+
+/* PUJIAN RANDOM */
+var compliments=[
+"If confidence had a face, it would probably look like you",
+"Kamu tuh attractive banget without even trying.",
+"I swear, you’re the definition of effortlessly attractive",
+"Ngeliat kamu aja udah cukup bikin mood aku naik",
+"Aku beruntung banget punya kamu 💖"
+];
+
+function randomCompliment(){
+var random=compliments[Math.floor(Math.random()*compliments.length)];
+document.getElementById("compliment").innerHTML=random;
+}
+
+/* TYPEWRITER */
+var text=`Happy Sweet Seventeen 🤍
+Aku bersyukur banget bisa ada di samping kamu.
+Semoga semua mimpi kamu tercapai.
+Aku selalu ada buat kamu.
+I love you always ❤️`;
+
+var i=0;
+function typeWriter(){
+if(i<text.length){
+document.getElementById("typing").innerHTML+=text.charAt(i);
+i++;
+setTimeout(typeWriter,30);
+}
+}
+
+</script>
+
+</body>
+</html>
