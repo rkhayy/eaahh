@@ -22,8 +22,19 @@ animation:gradient 12s ease infinite;
 100%{background-position:0% 50%;}
 }
 
-.page{display:none;padding:50px;}
+.page{
+display:none;
+padding:50px;
+animation:fadeIn 1s ease;
+position:relative;
+z-index:2;
+}
 .active{display:block;}
+
+@keyframes fadeIn{
+from{opacity:0; transform:scale(0.95);}
+to{opacity:1; transform:scale(1);}
+}
 
 button{
 padding:12px 25px;
@@ -34,8 +45,8 @@ margin:10px;
 cursor:pointer;
 transition:0.3s;
 }
-
 button:hover{transform:scale(1.1);}
+button:active{transform:scale(0.9);}
 
 .yes{background:white;color:#ff4e8a;}
 .no{background:#ff4e8a;color:white;}
@@ -47,28 +58,60 @@ margin-top:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
+.mainPhoto{
+width:280px;
+position:relative;
+z-index:3;
+}
+
+h1,h2{
+text-shadow:0 0 15px rgba(255,255,255,0.8);
+}
+
 .gameHeart{
 position:fixed;
 font-size:40px;
 cursor:pointer;
+z-index:3;
 }
 
 .longtext{
 max-width:750px;
 margin:auto;
 font-size:15px;
-line-height:1.5;
+line-height:1.6;
 opacity:0;
 transition:opacity 2s;
 text-align:left;
 max-height:80vh;
 overflow:auto;
+background:rgba(0,0,0,0.2);
+padding:20px;
+border-radius:20px;
 }
 
-/* Confetti */
-@keyframes fall{
-to{transform:translateY(110vh);}
+/* MINI PHOTO */
+.miniPhoto{
+position:fixed;
+width:80px;
+height:80px;
+object-fit:cover;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+animation:floatPhoto 6s ease-in-out infinite alternate;
+opacity:0.85;
+z-index:1;
 }
+
+@keyframes floatPhoto{
+from{transform:translateY(0px) rotate(-5deg);}
+to{transform:translateY(-20px) rotate(5deg);}
+}
+
+.noMove{
+position:absolute;
+}
+
 </style>
 </head>
 
@@ -78,28 +121,26 @@ to{transform:translateY(110vh);}
 <source src="lagu.mp3" type="audio/mpeg">
 </audio>
 
-<!-- PAGE 1 -->
 <div class="page active" id="page1">
 <h1>Happy Birthday Feby Rachma ❤️</h1>
 <p id="countdown"></p>
 <button class="yes" onclick="nextPage(2)">Mulai 🎉</button>
 </div>
 
-<!-- PAGE 2 -->
 <div class="page" id="page2">
 <h2>Make a wish dulu dong boss</h2>
+<div style="font-size:120px;">🎂</div>
+<p>Tiup lilinnya dulu yaaa 🕯️</p>
 <p>Udah siap lanjut?</p>
 <button class="yes" onclick="nextPage(3)">Gas</button>
 </div>
 
-<!-- PAGE 3 MINI GAME -->
 <div class="page" id="page3">
-<h2>Tangkap Hatinya Dulu DoNG Bos</h2>
-<p>Klik 5 hati buat lanjut</p>
+<h2>Tangkap Hatinya Dulu DoNG Bos, Biar Keliatan Sayang Aku NYA</h2>
+<p>Pencet 5 hati buat lanjut</p>
 <p id="score">0 / 5</p>
 </div>
 
-<!-- PAGE 4 PILIHAN -->
 <div class="page" id="page4">
 <h2>Which One, Yang Paling Kamu Suka</h2>
 <button class="yes" onclick="nextPage(5)">Pertama Kali Kamu Notice Aku</button>
@@ -107,32 +148,30 @@ to{transform:translateY(110vh);}
 <button class="yes" onclick="nextPage(5)">Semua Moment Sama Aku</button>
 </div>
 
-<!-- PAGE 5 PUJIAN RANDOM -->
 <div class="page" id="page5">
-<h2>Kamu tau ga?</h2>
+<h2>Btw, Kamu Tau gA?</h2>
 <p id="compliment"></p>
 <button class="yes" onclick="randomCompliment()">Klik lagi </button>
 <br><br>
 <button class="yes" onclick="nextPage(6)">Lanjut</button>
 </div>
 
-<!-- PAGE 6 FOTO -->
+<!-- PAGE 6 -->
 <div class="page" id="page6">
-<h2>Kamu itu spesial bangEeeeEet BUAT AKUUU</h2>
-<img src="foto.png">
+<h2>INIII DIA ORANG PALING SPESIALL BUATT AKUU HEHE I LOVE HER SO MUCHH</h2>
+<img src="foto.png" class="mainPhoto">
 <br>
 <button class="yes" onclick="nextPage(7)">Lanjut</button>
 </div>
 
-<!-- PAGE 7 PERTANYAAN -->
 <div class="page" id="page7">
 <h2>Kamu sayang sama aku ga boz?</h2>
 <button class="yes" onclick="nextPage(8)">Sayang bangettt</button>
+<button class="no noMove" id="noBtn">Enggak</button>
 </div>
 
-<!-- PAGE 8 LONG TEXT -->
 <div class="page" id="page8">
-<h2>For U Cintaa ❤️</h2>
+<h2>Buat Kamu Sayangg, Baca yAaa</h2>
 <div class="longtext">
 <p id="typing"></p>
 </div>
@@ -153,33 +192,36 @@ if(num==3){
 startGame();
 }
 
+if(num==6){
+createRandomPhotos(15);
+}
+
 if(num==8){
 document.querySelector(".longtext").style.opacity="1";
+createRandomPhotos(20);
 typeWriter();
 }
 }
 
-/* COUNTDOWN */
-setInterval(function(){
-var target=new Date("2026-02-13T00:00:00+07:00").getTime();
-var now=new Date().getTime();
-var distance=target-now;
-
-var days=Math.floor(distance/(1000*60*60*24));
-var hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
-var minutes=Math.floor((distance%(1000*60*60))/(1000*60));
-var seconds=Math.floor((distance%(1000*60))/1000);
-
-document.getElementById("countdown").innerHTML=
-days+" Hari "+hours+" Jam "+minutes+" Menit "+seconds+" Detik ❤️";
-},1000);
+/* RANDOM PHOTO GENERATOR */
+function createRandomPhotos(total){
+for(let i=0;i<total;i++){
+let photo=document.createElement("img");
+photo.src="foto.png";
+photo.className="miniPhoto";
+photo.style.left=Math.random()*90+"vw";
+photo.style.top=Math.random()*90+"vh";
+photo.style.animationDuration=(4+Math.random()*4)+"s";
+document.body.appendChild(photo);
+setTimeout(()=>photo.remove(),12000);
+}
+}
 
 /* MINI GAME */
 var score=0;
 function startGame(){
 score=0;
 document.getElementById("score").innerHTML="0 / 5";
-
 var interval=setInterval(function(){
 var heart=document.createElement("div");
 heart.className="gameHeart";
@@ -197,9 +239,7 @@ clearInterval(interval);
 nextPage(4);
 }
 };
-
 setTimeout(()=>heart.remove(),2000);
-
 },800);
 }
 
@@ -219,10 +259,17 @@ document.getElementById("compliment").innerHTML=random;
 
 /* TYPEWRITER */
 var text=`Happy Sweet Seventeen 🤍
-Aku bersyukur banget bisa ada di samping kamu.
-Semoga semua mimpi kamu tercapai.
-Aku selalu ada buat kamu.
-I love you always ❤️`;
+​Finally, the big 1-7! Selamat datang di usia yang kata orang paling indah. I’m so incredibly happy that I get to be the one standing by your side as you enter this new chapter. Lihat kamu tumbuh jadi perempuan yang makin dewasa, makin cantik, dan makin hebat itu bener-bener salah satu hal favorit aku di dunia ini.
+
+​You’re officially a 'sweet seventeen' girl now, but to me, you’ve always been the sweetest person I’ve ever known. Makasih ya, Feb, udah lahir ke dunia ini dan makasih udah izinin aku jadi bagian dari hidup kamu. Di umur 17 ini, aku berharap semua mimpi-mimpi kamu dari yang paling kecil sampe yang paling ambisius bisa tercapai satu per satu. You deserve all the happiness in the world, and I’ll do my best to make sure you feel loved every single day.
+
+​I know things might get more serious from now on, tapi jangan pernah takut buat melangkah ya. No matter what happens, you have me. Aku bakal selalu ada buat dengerin cerita kamu, buat nemenin kamu cari makan pas lagi laper, atau sekadar jadi sandaran pas kamu lagi capek. We’re going to make so many more amazing memories together, especially now that you’re seventeen!
+
+​Stay humble, stay kind, and stay as wonderful as you are. Jangan pernah ragu sama kemampuan kamu sendiri, because you are capable of doing great things. I’m your number one fan, always.
+
+​Sekali lagi, Happy Birthday, babe! Enjoy your special day to the fullest. Besok kita rayain lagi bareng Valentine, ya? Double celebration for my favorite girl!
+
+​I love you more than words can describe. Happy Sweet Seventeen, my love! :3 ❤️`;
 
 var i=0;
 function typeWriter(){
@@ -233,7 +280,20 @@ setTimeout(typeWriter,30);
 }
 }
 
+/* NO BUTTON MOVE */
+var noBtn=document.getElementById("noBtn");
+noBtn.addEventListener("mouseover",moveNoButton);
+noBtn.addEventListener("click",moveNoButton);
+
+function moveNoButton(){
+var x=Math.random()*(window.innerWidth-120);
+var y=Math.random()*(window.innerHeight-70);
+noBtn.style.left=x+"px";
+noBtn.style.top=y+"px";
+}
+
 </script>
 
 </body>
 </html>
+  
